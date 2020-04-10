@@ -12,6 +12,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from flask_migrate import Migrate
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -20,6 +21,8 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 # TODO: connect to a local postgresql database
 
@@ -32,18 +35,18 @@ class Venue(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    genres = None
+    genres = db.Column(db.String)  # Needs to join to venuegenre table
     address = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
     website = db.Column(db.String(120))
     facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean)
+    seeking_talent = db.Column(db.Boolean, nullable=False)
     seeking_description = db.Column(db.String())
     image_link = db.Column(db.String(500))
-    past_shows = None
-    upcoming_shows = None
+    past_shows = db.Column(db.Boolean, nullable=False)  # Needs to join to shows table
+    upcoming_shows = db.Column(db.Boolean, nullable=False)  # Needs to join to shows table
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
@@ -54,7 +57,7 @@ class Artist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    genres = None
+    genres = db.Column(db.String)  # Needs to join to artistgenre table
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
@@ -63,8 +66,8 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String())
     image_link = db.Column(db.String(500))
-    past_shows = None
-    upcoming_shows = None
+    past_shows = db.Column(db.Boolean)  # Needs to join to shows table
+    upcoming_shows = db.Column(db.Boolean)  # Needs to join to shows table
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
